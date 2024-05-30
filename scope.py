@@ -5,10 +5,63 @@ from io import BytesIO
 import urllib.request
 import time, re
 
-# UTILITIES
+### STRING PROCESSING ###
+# Cleans text for entry into csv
+def cleanText(text):
+    new_text = re.sub(r"\n|@", " ", text)
+    if new_text == None:
+        new_text = ""
+    return new_text
+# Cleans text to be used as a filename
+def cleanFilename(text):
+    new_text = re.sub(r"\\|\/|\:|\*|\?|\"|\<|\>|\||\@|\n|\~", "", text)
+    if new_text == None:
+        new_text = ""
+    return new_text
+
+### DRIVER FUNCTIONS ###
+# Handle Errors and Invalid URLs
+def driverGet(driver, target, sleep=2):
+    if driver.current_url != target and not '\t' in target:
+        try:
+            driver.get(target)
+        except:
+            print(f"Error: Unable to get {target}")
+    time.sleep(sleep)
+
+### LOG ###
+def printProgress(list, index):
+    print(f"{list.index(index)+1}/{len(list)}")
+
+### UTILITIES ###
+# Get Scroll Height
+def getScroll(driver):
+    return driver.execute_script("return document.body.scrollHeight;")
+# Scroll Down One Screen Length
+def scrollScreen(driver):
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(2)
+    new_height = getScroll(driver)
+    return new_height
+# Scroll to CSS Element
+def scrollToElement(driver, element):
+    driver.execute_script(f"window.scrollTo(0, 0);")
+    ActionChains(driver).move_to_element(element).perform()
+    time.sleep(.5)
+# Scroll down until you can't anymore
+def scrollToBottom(driver):
+    last_height = getScroll(driver)
+    while True:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(2)
+        new_height = getScroll(driver)
+        if new_height == last_height:
+            break
+        last_height = new_height
+# Get Window Height
 def getHeight(driver, cookies=0, banner=0):
     return driver.execute_script("return window.innerHeight") - cookies - banner
-
+# Get Element Boundaries
 def getBoundaries(driver, element=None, bottom=None, top=None):
     # Coordinates of Page Element
     if element != None:
@@ -32,34 +85,26 @@ def getBoundaries(driver, element=None, bottom=None, top=None):
     if top != None:
         coords["top"] = top
     return coords
-
-def grabSrc(element, size):
-    srcset = element.get_attribute("srcset").split(", ")
-    src = srcset[-1]
-    if size != "MAX":
-        for src_text in srcset:
-            if size in src_text:
-                src = src_text
-    src = re.sub(' [\d]+w', '', src)
+# Get Image Source Link
+def getSrc(element, MaxBool=False):
+    srcset = [img.split(" ") for img in element.get_attribute("srcset").split(", ")]
+    if MaxBool:
+        src = srcset[-1][0]
+    else:
+        for tup in srcset:
+            if tup[1] == "540w"  or tup[1] == "500w":
+                src = tup[0]
     return src
 
-# DOWNLOAD FUNCTIONS
-def downloadContents(contents, filename, caption=None):
-    num = 1
-    for tuple in contents:
-        for el in tuple[0]:
-            if el == tuple[0][-1] and caption != None:
-                new_filename = f"{filename} - {num} {caption}.{tuple[1]}"
-            else:
-                new_filename = f"{filename} - {num}.{tuple[1]}"
-            src = grabSrc(el, "MAX")
-            try:
-                urllib.request.urlretrieve(src, new_filename)
-            except:
-                print(f"Failed to Download {src}")
-            num += 1
+### DOWNLOAD FUNCTIONS ###
+def downloadFile(src, filename):
+    try:
+        urllib.request.urlretrieve(src, filename)
+    except:
+        print(f"Failed to Download {src}")
 
-# CAPTURE FUNCTIONS
+### CAPTURE FUNCTIONS ###
+# Combine Screenshots
 def combine(old_filename, new_filename_or_img, crop_coords=None, fitBool=False):
     # Grab Files
     old = Image.open(f"{old_filename}.png")
@@ -87,6 +132,7 @@ def combine(old_filename, new_filename_or_img, crop_coords=None, fitBool=False):
     new.close()
     image.close()
 
+# Capture Element
 def captureElement(driver, filename, element=None, bottom=None, top=None, cookies=0, banner=0):
     dest = REDACTED
     # If Element is too small, add border
@@ -97,7 +143,6 @@ def captureElement(driver, filename, element=None, bottom=None, top=None, cookie
         screen_bottom = element.location["y"]
     # Grab Screenshot
     image = Image.open(BytesIO(driver.get_screenshot_as_png()))
-    image.save(f"{dest}Temp0.png")
     image = image.crop((0, 0, image.width, image.height - cookies))
     image.save(f"{dest}Temp.png")
 # If Window isn't tall enough to capture element
@@ -109,13 +154,10 @@ def captureElement(driver, filename, element=None, bottom=None, top=None, cookie
         time.sleep(1)
         screen_bottom = screen_bottom + getHeight(driver, cookies, banner)
         new_img = Image.open(BytesIO(driver.get_screenshot_as_png()))
-        # new_img.save(f"{dest}Temp1.png")
         new_img = new_img.crop((0, banner, image.width, new_img.height - cookies))
         # At end of page, crop out duplicate parts of screen
         if scroll_length != getHeight(driver, cookies, banner):
             new_img = new_img.crop((0, getHeight(driver, cookies, banner) - scroll_length, new_img.width, new_img.height))
-        # new_img.save(f"{dest}Temp1crop.png")
-        # wait = input("Press Enter to Continue")
         combine(f"{dest}Temp", new_img)
     image_final = Image.open(f"{dest}Temp.png")
     if element != None:
