@@ -24,10 +24,7 @@ def main(driver, command):
         code = utils.extractCode(target)
         # Open URL
         scope.driverGet(driver, target, sleep=5)
-    # Commands
-        if command == "check":
-            wait = input("Press Enter to Continue")
-            continue
+# Command Types
     # Capture Commands
         if command in ["ingest", "cap", "prev", "pic"]:
             post = utils.grabPost(driver)
