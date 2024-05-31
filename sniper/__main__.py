@@ -27,7 +27,7 @@ if __name__ == "__main__":
             print("Logging into Tumblr...")
             login.tumblrLogin(driver)
             print("Welcome to the Tumblr Shell")
-            print("Commands: check, ingest, cap, prev, pic, in, data, source, text, reblog, test, link, url, archive, feed")
+            print("Commands: ingest, cap, prev, pic, in, data, source, text, reblog, test, link, url, archive, feed")
             while True:
                 command = input("tumblr> ")
                 if command == "exit":
@@ -35,7 +35,6 @@ if __name__ == "__main__":
                     break
                 elif command == "help":
                     print("Commands:" + \
-                        "\n\tcheck - open url and pause" + \
                         "\n\tingest - grab pics and capture" + \
                         "\n\tcap - capture post" + \
                         "\n\tprev - capture top of post" + \
@@ -65,7 +64,6 @@ if __name__ == "__main__":
                     break
                 elif command == "help":
                     print("Commands:" + \
-                        "\n\tcheck - open url and pause" + \
                         "\n\tingest - grab pics and capture" + \
                         "\n\tcap - capture post" + \
                         "\n\tprev - capture top of post" + \
