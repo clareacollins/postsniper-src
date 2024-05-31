@@ -1,4 +1,4 @@
-from . import patreon_utils as utils
+from sniper.patreon import patreon_utils as utils
 
 from sniper import scope
 

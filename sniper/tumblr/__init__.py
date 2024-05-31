@@ -1,15 +1,13 @@
-from . import tumblr_funcs as funcs
-from . import tumblr_utils as utils
+from sniper import login, scope, dir
 
-from sniper import login, scope
-
-import files, dir
+from sniper.tumblr import tumblr_funcs as funcs
+from sniper.tumblr import tumblr_utils as utils
 
 dest = dir.root + "\\in"
 target_file = f"{dir.root}\\target.txt"
 
 def main(driver, command):
-    targets = files.readLines(target_file)
+    targets = scope.readLines(target_file)
     print(f"Sniper Engaged: {len(targets)} Targets Aquired")
     data_tuples = []
 # Begin Iteration
@@ -26,7 +24,7 @@ def main(driver, command):
                 data_tuples = funcs.commandArchive(driver, user, tag)
             elif command == "feed": # Grab Links from User and Tag in Feed
                 data_tuples = funcs.commandFeed(driver, user, tag)
-            files.write(f"{dir.root}\\{command} {user} {tag}.txt", data_tuples)
+            scope.write(f"{dir.root}\\{command} {user} {tag}.txt", data_tuples)
     # Get Post Data
         else:
             user, code = utils.extractUserAndCode(target)
@@ -86,7 +84,7 @@ def main(driver, command):
                 url = funcs.commandURL(driver, post)
                 data_tuples.append((user, code, url))
         # Write Data
-            files.write(f"{dir.root}\\{command}.txt", data_tuples)
+            scope.write(f"{dir.root}\\{command}.txt", data_tuples)
 
     # Reload Driver
         iter += 1

@@ -3,9 +3,11 @@ from selenium.webdriver.chrome.options import Options
 
 from selenium.webdriver.common.by import By
 
-from sniper import tumblr, patreon, twitter, other, login, scope
+from sniper import login, scope, dir
 
-import dir
+from sniper import tumblr, patreon, twitter, other
+
+import msvcrt
 
 chrome_options = Options()
 # chrome_options.add_argument('--headless')
@@ -21,6 +23,8 @@ if __name__ == "__main__":
     while True:
         # break
         platform = input("> ")
+        # platform = "patreon"
+        # print("Defaulting to patreon shell")
         if platform == "exit":
             break
         elif platform == "tumblr":
@@ -75,6 +79,20 @@ if __name__ == "__main__":
                         "\n\texit - exit the patreon shell")
                 else:
                     patreon.main(driver, command)
+        elif platform == "twitter":
+            print("Logging into twitter...")
+            login.twitterLogin(driver)
+            print("Welcome to the Twitter Shell")
+            while True:
+                command = input("twitter> ")
+                if command == "exit":
+                    print("Exiting Twitter Shell")
+                    break
+                elif command == "help":
+                    print("Commands:" + \
+                        "\n\texit - exit the twitter shell")
+                else:
+                    twitter.main(driver, command)
         elif platform == "other":
             print("Welcome to the Other Shell")
             while True:
@@ -88,9 +106,10 @@ if __name__ == "__main__":
                 else:
                     other.main(driver, command)
         elif platform == "test":
-            driver.set_window_size(1024, 1940)
+            # driver.set_window_size(1024, 1940)
             print("Welcome to the Test Shell")
             while True:
+
                 command = input("test> ")
                 if command == "exit":
                     print("Exiting Test Shell")
@@ -99,13 +118,15 @@ if __name__ == "__main__":
                     print("Commands:" + \
                         "\n\texit - exit the test shell")
                 else:
-                    try:
-                        element = driver.find_element(By.CSS_SELECTOR, command)
-                        print(element)
-                        scope.captureElement(driver, f"{dir.root}\\in\\preview\\test - {command}", element)
-                    except:
-                        print("Element not found")
-                    
+                    els = driver.find_elements(By.CSS_SELECTOR, command)
+                    print(len(els))
+                    for el in els:
+                        print(el.get_attribute("class"))
+                        try:
+                            scope.captureElement(driver, f"{dir.root}\\in\\preview\\test - {command} {els.index(el)}", element=el)
+                        except:
+                            print("Error Capturing Element")
+                            break
         else:
             print("Invalid Platform. Please try again or type 'exit' to exit the shell.")
     

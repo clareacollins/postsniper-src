@@ -1,10 +1,7 @@
+from sniper import scope, dir
+from sniper.tumblr import tumblr_utils as utils
+
 import urllib.request
-
-from . import tumblr_utils as utils
-
-from sniper import scope
-
-import dir
 
 # Open Post
 def openPost(driver):

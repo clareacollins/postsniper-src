@@ -3,7 +3,9 @@ from selenium.webdriver import ActionChains
 from PIL import Image
 from io import BytesIO
 import urllib.request
-import time, re
+import time, re, os
+
+from sniper import dir
 
 ### STRING PROCESSING ###
 # Cleans text for entry into csv
@@ -19,10 +21,36 @@ def cleanFilename(text):
         new_text = ""
     return new_text
 
+### FILE FUNCTIONS ###
+# Passed file title and data, writes data to file at location
+def write(title, data):
+    csvText = ""
+    if isinstance(data, str):
+        csvText = data
+    else:
+        for tuple in data:
+            if isinstance(tuple, str):
+                csvText += tuple + "\n"
+            else:
+                csvText += "@".join(tuple) + "\n"
+    os.chdir(dir.root)
+    FileObject = open(title, "w", encoding="utf-8")
+    FileObject.write(csvText)
+    FileObject.close()
+
+def readLines(file_dir):
+    if not os.path.exists(file_dir):
+        return []
+    else:
+        FileObject = open(file_dir, "r")
+        FileLines = FileObject.readlines()
+        FileObject.close()
+        return [line.strip() for line in FileLines if line.strip() != ""]
+
 ### DRIVER FUNCTIONS ###
 # Handle Errors and Invalid URLs
 def driverGet(driver, target, sleep=2):
-    if driver.current_url != target and not '\t' in target:
+    if driver.current_url != target and not '\t' in target and '/' in target:
         try:
             driver.get(target)
         except:
@@ -134,7 +162,7 @@ def combine(old_filename, new_filename_or_img, crop_coords=None, fitBool=False):
 
 # Capture Element
 def captureElement(driver, filename, element=None, bottom=None, top=None, cookies=0, banner=0):
-    dest = REDACTED
+    dest = 'C:\\TumblrSniper\\extract\\temp\\'
     # If Element is too small, add border
     coords = getBoundaries(driver, element, bottom, top)
     capture_bottom = coords["bottom"]
