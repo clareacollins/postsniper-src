@@ -2,8 +2,6 @@ import time, re
 
 from sniper import scope, dir
 
-dest = dir.root + "\\in"
-
 def main(driver, targets, command):
     # Begin Iteration
     for target in targets:
@@ -19,4 +17,4 @@ def main(driver, targets, command):
         filename = re.sub('http(s)?://', '', target)
         filename = re.sub('/|\?', '_', filename)
         print(filename)
-        scope.captureElement(driver, f"{dest}\\{filename}", cookies=300, banner=300)
+        scope.captureElement(driver, f"{dir.post}\\{filename}", cookies=300, banner=300)

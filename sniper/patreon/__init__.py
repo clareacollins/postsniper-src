@@ -3,12 +3,8 @@ from sniper.patreon import patreon_utils as utils
 
 from sniper import scope, dir
 
-target_file = f"{dir.root}\\target.txt"
-post_dir = f"{dir.root}\\in\\preview"
-img_dir = f"{dir.root}\\in\\img"
-
 def main(driver, command):
-    targets = scope.readLines(target_file)
+    targets = scope.readLines(dir.target)
     print(f"Sniper Engaged: {len(targets)} Targets Aquired")
     # Extract User from Target URL
     if "/posts" in targets[0]:
@@ -29,16 +25,16 @@ def main(driver, command):
             post = utils.grabPost(driver)
             driver.set_window_size(1024, 1940)
             if command == "ingest":
-                scope.captureElement(driver, f"{post_dir}\\{user} - {code}", element=post, bottom=utils.getPostEnd(post))
+                scope.captureElement(driver, f"{dir.post}\\{user} - {code}", element=post, bottom=utils.getPostEnd(post))
                 images = utils.grabImages(post)
-                funcs.downloadImages(driver, images, f"{img_dir}\\{user} - {code}")
+                funcs.downloadImages(driver, images, f"{dir.img}\\{user} - {code}")
             elif command == "cap":
-                scope.captureElement(driver, f"{post_dir}\\{user} - {code}", element=post, bottom=utils.getPostEnd(post))
+                scope.captureElement(driver, f"{dir.post}\\{user} - {code}", element=post, bottom=utils.getPostEnd(post))
             elif command == "prev":
-                scope.captureElement(driver, f"{post_dir}\\{user} - {code}", element=post, bottom=min(utils.getPostEnd(post), 1939))
+                scope.captureElement(driver, f"{dir.post}\\{user} - {code}", element=post, bottom=min(utils.getPostEnd(post), 1939))
             elif command == "pic":
                 images = utils.grabImages(post)
-                funcs.downloadImages(driver, images, f"{img_dir}\\{user} - {code}")
+                funcs.downloadImages(driver, images, f"{dir.img}\\{user} - {code}")
     # Data Commands
         elif command in ["data", "text"]:
             post = utils.grabPost(driver)

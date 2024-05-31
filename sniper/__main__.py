@@ -39,16 +39,16 @@ if __name__ == "__main__":
                     break
                 elif command == "help":
                     print("Commands:" + \
-                        "\n\tingest - grab pics and capture" + \
-                        "\n\tcap - capture post" + \
+                        "\n\tingest - download images and capture post" + \
+                        "\n\tcap - capture entire post" + \
                         "\n\tprev - capture top of post" + \
-                        "\n\tpic - grab pics" + \
-                        "\n\tin - assemble post with pics inline" + \
+                        "\n\tpic - download images" + \
+                        "\n\tin - assemble post with images zoomed in" + \
                         "\n\tdata - get post data" + \
                         "\n\tsource - get source data" + \
                         "\n\ttext - get all text" + \
-                        "\n\treblog - get reblog count" + \
-                        "\n\ttest - get lost bool" + \
+                        "\n\treblog - get count of reblogs with content" + \
+                        "\n\ttest - get Bool for if post url still works" + \
                         "\n\tlink - get links in post text" + \
                         "\n\turl - get blog-first url" + \
                         "\n\tarchive - get links from users in archive" + \
@@ -68,10 +68,10 @@ if __name__ == "__main__":
                     break
                 elif command == "help":
                     print("Commands:" + \
-                        "\n\tingest - grab pics and capture" + \
-                        "\n\tcap - capture post" + \
+                        "\n\tingest - download images and capture post" + \
+                        "\n\tcap - capture entire post" + \
                         "\n\tprev - capture top of post" + \
-                        "\n\tpic - grab pics" + \
+                        "\n\tpic - download images" + \
                         "\n\tdata - get post data" + \
                         "\n\ttext - get all text" + \
                         "\n\tfeed - get links from users in feed" + \
@@ -90,6 +90,8 @@ if __name__ == "__main__":
                     break
                 elif command == "help":
                     print("Commands:" + \
+                        "\n\tmedia - get links from user's media" + \
+                        "\n\thelp - display this message" + \
                         "\n\texit - exit the twitter shell")
                 else:
                     twitter.main(driver, command)
@@ -102,6 +104,7 @@ if __name__ == "__main__":
                     break
                 elif command == "help":
                     print("Commands:" + \
+                        "\n\thelp - display this message" + \
                         "\n\texit - exit the other shell")
                 else:
                     other.main(driver, command)
@@ -109,13 +112,13 @@ if __name__ == "__main__":
             # driver.set_window_size(1024, 1940)
             print("Welcome to the Test Shell")
             while True:
-
                 command = input("test> ")
                 if command == "exit":
                     print("Exiting Test Shell")
                     break
                 elif command == "help":
                     print("Commands:" + \
+                        "\n\thelp - display this message" + \
                         "\n\texit - exit the test shell")
                 else:
                     els = driver.find_elements(By.CSS_SELECTOR, command)
@@ -128,7 +131,7 @@ if __name__ == "__main__":
                             print("Error Capturing Element")
                             break
         else:
-            print("Invalid Platform. Please try again or type 'exit' to exit the shell.")
+            print("Invalid Platform. Please try again or type 'exit' to exit the Sniper Shell.")
     
     print("Exiting the Sniper Shell")
     driver.quit()

@@ -3,11 +3,9 @@ from sniper import login, scope, dir
 from sniper.tumblr import tumblr_funcs as funcs
 from sniper.tumblr import tumblr_utils as utils
 
-dest = dir.root + "\\in"
-target_file = f"{dir.root}\\target.txt"
 
 def main(driver, command):
-    targets = scope.readLines(target_file)
+    targets = scope.readLines(dir.target)
     print(f"Sniper Engaged: {len(targets)} Targets Aquired")
     data_tuples = []
 # Begin Iteration
@@ -43,20 +41,20 @@ def main(driver, command):
             driver.set_window_size(1024, 1940)
             if command == "ingest": # Capture Post and Download Files
                 caption = utils.getCaption(post)
-                funcs.downloadContents(contents, f"{dest}\\{type}\\{source} - {code}", caption)
-                scope.captureElement(driver, f"{dest}\\preview\\{source} - {code}", post, bottom=utils.getPostEnd(post))
+                funcs.downloadContents(contents, f"{dir.root}\\in\\{type}\\{source} - {code}", caption)
+                scope.captureElement(driver, f"{dir.post}\\{source} - {code}", post, bottom=utils.getPostEnd(post))
             elif command == "cap": # Capture Post Image
-                scope.captureElement(driver, f"{dest}\\preview\\{source} - {code}", post, bottom=utils.getPostEnd(post))
+                scope.captureElement(driver, f"{dir.post}\\{source} - {code}", post, bottom=utils.getPostEnd(post))
                 # If gif, assemble
                 if type == "gif":
-                    funcs.assemblePost(driver, f"{dest}\\il\\{source} - {code}", post, contents, fitBool=True)
+                    funcs.assemblePost(driver, f"{dir.inline}\\{source} - {code}", post, contents, fitBool=True)
             elif command == "prev": # Capture Post Preview (No Scrolling)
-                scope.captureElement(driver, f"{dest}\\preview\\{source} - {code}", post, bottom=min(utils.getPostEnd(post), 1939))
+                scope.captureElement(driver, f"{dir.post}\\{source} - {code}", post, bottom=min(utils.getPostEnd(post), 1939))
             elif command == "pic": # Download Post Images
                 caption = utils.getCaption(post)
-                funcs.downloadContents(contents, f"{dest}\\{type}\\{source} - {code}", caption)
+                funcs.downloadContents(contents, f"{dir.root}\\in\\{type}\\{source} - {code}", caption)
             elif command == "in": # Assemble Post Image From Components
-                funcs.assemblePost(driver, f"{dest}\\il\\{source} - {code}", post, contents, fitBool=False)
+                funcs.assemblePost(driver, f"{dir.inline}\\{source} - {code}", post, contents, fitBool=False)
 # Data Commands
         elif command in ["data", "source", "text", "reblog", "test", "link", "url"]:
             driver.set_window_size(1024, 1024)

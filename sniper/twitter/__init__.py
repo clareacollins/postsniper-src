@@ -3,10 +3,8 @@ from sniper.twitter import twitter_utils as utils
 
 from sniper import scope, dir
 
-target_file = f"{dir.root}\\target.txt"
-
 def main(driver, command):
-    targets = scope.readLines(target_file)
+    targets = scope.readLines(dir.target)
     print(f"Sniper Engaged: {len(targets)} Targets Aquired")
     data_tuples = []
 # Begin Iteration
