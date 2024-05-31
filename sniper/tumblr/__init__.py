@@ -17,11 +17,7 @@ def main(driver, command):
     for target in targets:
         scope.printProgress(targets, target)
         scope.driverGet(driver, target)
-# Command Type
-    # Look at Webpage
-        if command == "check":
-            wait = input("Press Enter to Continue")
-            continue
+# Command Types
 # Archive and Feed
         if command in ["archive", "feed"]:
             user, tag = utils.extractUserAndTag(target)
