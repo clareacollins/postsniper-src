@@ -7,8 +7,6 @@ from sniper import login, scope, dir
 
 from sniper import tumblr, patreon, twitter, other
 
-import msvcrt
-
 chrome_options = Options()
 # chrome_options.add_argument('--headless')
 chrome_options.add_argument('--log-level=3')
@@ -21,10 +19,7 @@ if __name__ == "__main__":
     print("Driver Established")
     print("Enter a Platform:\n-> tumblr\n-> patreon\n-> twitter\n-> other")
     while True:
-        # break
         platform = input("> ")
-        # platform = "patreon"
-        # print("Defaulting to patreon shell")
         if platform == "exit":
             break
         elif platform == "tumblr":
@@ -90,6 +85,12 @@ if __name__ == "__main__":
                     break
                 elif command == "help":
                     print("Commands:" + \
+                        "\n\tingest - download images and capture post" + \
+                        "\n\tcap - capture entire post" + \
+                        "\n\tprev - capture top of post" + \
+                        "\n\tpic - download images" + \
+                        "\n\tdata - get post data" + \
+                        "\n\ttext - get post text" + \
                         "\n\tmedia - get links from user's media" + \
                         "\n\thelp - display this message" + \
                         "\n\texit - exit the twitter shell")
@@ -111,6 +112,9 @@ if __name__ == "__main__":
         elif platform == "test":
             # driver.set_window_size(1024, 1940)
             print("Welcome to the Test Shell")
+            # login.tumblrLogin(driver)
+            # login.patreonLogin(driver)
+            # login.twitterLogin(driver)
             while True:
                 command = input("test> ")
                 if command == "exit":
@@ -120,6 +124,23 @@ if __name__ == "__main__":
                     print("Commands:" + \
                         "\n\thelp - display this message" + \
                         "\n\texit - exit the test shell")
+                elif " --" in command:
+                    element, action, count = command.split(" --")
+                    if action == "click":
+                        try:
+                            driver.find_elements(By.CSS_SELECTOR, element)[int(count)].click()
+                        except:
+                            print("Error Clicking Element")
+                    elif action == "text":
+                        try:
+                            print(driver.find_elements(By.CSS_SELECTOR, element)[int(count)].text)
+                        except:
+                            print("Error Extracting Text")
+                    elif action == "src":
+                        try:
+                            print(driver.find_elements(By.CSS_SELECTOR, element)[int(count)].get_attribute("src"))
+                        except:
+                            print("Error Grabbing Element SRC")
                 else:
                     els = driver.find_elements(By.CSS_SELECTOR, command)
                     print(len(els))

@@ -1,5 +1,16 @@
 from selenium.webdriver.common.by import By
 
+def extractUser(target):
+    if "/" in target:
+        return target.split("/")[3]
+    else:
+        return target
+
+def extractCode(target):
+    if "/" in target:
+        return target.split("/")[5]
+    else:
+        return None
 
 def getPost(driver):
     return driver.find_element(By.CSS_SELECTOR, "article")
@@ -19,6 +30,9 @@ def getPostImages(post):
 
 def getPostDate(post):
     return post.find_element(By.CSS_SELECTOR, "time")
+
+def getPostEnd(post):
+    return post.find_element(By.CSS_SELECTOR, "article div.r-qklmqi").location["y"]
 
 # Archive
 def getMedia(driver):

@@ -2,8 +2,18 @@ from sniper.twitter import twitter_utils as utils
 
 from sniper import scope
 
-import time
+import time, requests, re
 
+def downloadImages(images, filename):
+    num = 1
+    for image in images:
+        src = image.get_attribute("src")
+        src = re.sub("\?format=jpg&name=[\d|\w]*", "?format=jpg&name=large", src)
+        if src != "https://":
+            r = requests.get(src)
+            with open(f"{filename} - {num}.png", "wb") as f:
+                f.write(r.content)
+            num += 1
 
 def commandMedia(driver):
     # Grab Media
