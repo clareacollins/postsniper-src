@@ -21,6 +21,12 @@ def cleanFilename(text):
         new_text = ""
     return new_text
 
+def userSelectMssg(options, keyword):
+    user_mssg = f"Select {keyword}:\n"
+    for count, option in options:
+        user_mssg += f"[{count}] {option}\n"
+    return user_mssg
+
 ### FILE FUNCTIONS ###
 # Passed file title and data, writes data to file at location
 def write(title, data):

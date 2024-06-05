@@ -6,16 +6,11 @@ from sniper import scope, dir
 def main(driver, command):
     targets = scope.readLines(dir.target)
     print(f"Sniper Engaged: {len(targets)} Targets Aquired")
-    # Extract User from Target URL
-    if "/posts" in targets[0]:
-        user = utils.extractUser(targets[0])
-    else:
-        user = input("Enter User: ")
-    print(f"User: {user}")
     data_tuples = []
 # Begin Iteration
     for target in targets:
         scope.printProgress(targets, target)
+        user = utils.extractUser(target)
         code = utils.extractCode(target)
         # Open URL
         scope.driverGet(driver, target, sleep=5)
@@ -49,9 +44,7 @@ def main(driver, command):
             scope.write(f"{dir.root}\\patreon {command}.txt", data_tuples)
     # Archive Commands
         elif command == "feed":
+            scope.driverGet(driver, f"https://www.patreon.com/{user}/posts", sleep=5)
             driver.set_window_size(1024, 1940)
-            
-            wait = input("Choose your Feed Settings in the driver and Press Enter to Continue")
-            print("Processing Feed...")
-            data_tuples = funcs.commandFeed(driver)
-            scope.write(f"{dir.root}\\{command} {user}.txt", data_tuples)
+            data_tuples, filter_str = funcs.commandFeed(driver)
+            scope.write(f"{dir.root}\\{command} {user} {filter_str}.txt", data_tuples)

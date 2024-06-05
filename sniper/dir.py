@@ -11,4 +11,4 @@ post = f"{root}\\in\\preview"
 
 inline = f"{root}\\in\\il"
 
-LoginData = json.load(open(f"{root}\\src\\redacted_info.json", "r"))
+LoginData = json.load(open(f"{root}\\redacted_info.json", "r"))
