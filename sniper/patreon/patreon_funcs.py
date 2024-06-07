@@ -2,50 +2,22 @@ from sniper.patreon import patreon_utils as utils
 
 from sniper import scope
 
-import time, requests
-
-def downloadImages(driver, images, filename):
-    num = 1
-    for image in images:
-        try:
-            image.click()
-            time.sleep(2)
-            src = utils.grabLightboxImage(driver).get_attribute("src")
-        except:
-            src = image.get_attribute("src")
-        if src != "https://":
-            r = requests.get(src)
-            print(f"{filename} - {num}.png")
-            with open(f"{filename} - {num}.png", "wb") as f:
-                f.write(r.content)
-            num += 1
+def filterFeed(driver):
+    type = utils.selectFilter(driver, "Post type", "div.ekWcTy button")
+    tier = utils.selectFilter(driver, "Tier", "a.iQxAKa")
+    if tier == "All posts":
+        tier = "all"
+    elif tier == "Posts you have access to":
+        tier = "access"
+    date = utils.selectFilter(driver, "Date", "a.iQxAKa")
+    order = utils.toggleOrder(driver)
+    return " ".join([item for item in [type, tier, date, order] if item != None]).strip()
 
 def commandFeed(driver):
-    post_list = []
-    data_tuples = []
+    utils.closeMembershipPopup(driver)
+    utils.closeAppPopup(driver)
+    filter_str = filterFeed(driver)
     # Process Posts while scrolling
-    last_height = scope.getScroll(driver)
-    while True:
-        new_height = scope.scrollScreen(driver)
-        if new_height == last_height:
-            time.sleep(2)
-            # Expand
-            expand = utils.grabExpandButtons(driver)
-            if len(expand) > 0:
-                expand[0].click()
-                time.sleep(10)
-                # Grab Posts
-                new_posts = []
-                posts = utils.grabFeedPosts(driver)
-                for post in posts:
-                    if post not in post_list:
-                        post_list.append(post)
-                        new_posts.append(post)
-                for post in new_posts:
-                    data_tuples.append((post.get_attribute("href"), post.text))
-                last_height = scope.getScroll(driver)
-                continue                
-            else:
-                break
-        last_height = new_height
-    return data_tuples
+    print("Processing Posts...")
+    data_tuples = scope.whileScrolling(driver, utils.grabFeedPosts, sleep=2, expand=utils.grabExpandButtons)
+    return data_tuples, filter_str

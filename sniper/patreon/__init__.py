@@ -10,10 +10,10 @@ def main(driver, command):
 # Begin Iteration
     for target in targets:
         scope.printProgress(targets, target)
-        user = utils.extractUser(target)
-        code = utils.extractCode(target)
         # Open URL
         scope.driverGet(driver, target, sleep=5)
+        user = utils.extractUser(target, driver)
+        code = utils.extractCode(target)
 # Command Types
     # Capture Commands
         if command in ["ingest", "cap", "prev", "pic"]:
@@ -21,15 +21,13 @@ def main(driver, command):
             driver.set_window_size(1024, 1940)
             if command == "ingest":
                 scope.captureElement(driver, f"{dir.post}\\{user} - {code}", element=post, bottom=utils.getPostEnd(post))
-                images = utils.grabImages(post)
-                funcs.downloadImages(driver, images, f"{dir.img}\\{user} - {code}")
+                scope.downloadImages(utils.grabImages(post), f"{dir.img}\\{user} - {code}", utils.getSrc, scope.downloadRequests, driver)
             elif command == "cap":
                 scope.captureElement(driver, f"{dir.post}\\{user} - {code}", element=post, bottom=utils.getPostEnd(post))
             elif command == "prev":
                 scope.captureElement(driver, f"{dir.post}\\{user} - {code}", element=post, bottom=min(utils.getPostEnd(post), 1939))
             elif command == "pic":
-                images = utils.grabImages(post)
-                funcs.downloadImages(driver, images, f"{dir.img}\\{user} - {code}")
+                scope.downloadImages(utils.grabImages(post), f"{dir.img}\\{user} - {code}", utils.getSrc, scope.downloadRequests, driver)
     # Data Commands
         elif command in ["data", "text"]:
             post = utils.grabPost(driver)
