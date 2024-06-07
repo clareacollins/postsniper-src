@@ -49,6 +49,15 @@ def twitterLogin(driver):
     driver.find_element(By.CSS_SELECTOR, "button.r-19yznuf").click()
     time.sleep(5)
 
+def loginType(driver, type='tumblr'):
+    print(f"Logging into {type}...")
+    if type == 'tumblr':
+        tumblrLogin(driver)
+    elif type == 'patreon':
+        patreonLogin(driver)
+    elif type == 'twitter':
+        twitterLogin(driver)
+
 def reload(type='tumblr'):
     print("Reloading Driver")
     time.sleep(5)

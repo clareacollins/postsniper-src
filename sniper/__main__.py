@@ -1,11 +1,13 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 
 from sniper import login, scope, dir
 
 from sniper import tumblr, patreon, twitter, other
+
+import sys
 
 chrome_options = Options()
 # chrome_options.add_argument('--headless')
@@ -17,9 +19,8 @@ if __name__ == "__main__":
 # Establish Driver
     driver = webdriver.Chrome(options=chrome_options)
     print("Driver Established")
-    print("Enter a Platform:\n-> tumblr\n-> patreon\n-> twitter\n-> other")
     while True:
-        platform = input("> ")
+        platform = scope.handlePlatform(sys.argv)
         if platform == "exit":
             break
         elif platform == "tumblr":
@@ -112,9 +113,7 @@ if __name__ == "__main__":
         elif platform == "test":
             # driver.set_window_size(1024, 1940)
             print("Welcome to the Test Shell")
-            # login.tumblrLogin(driver)
-            # login.patreonLogin(driver)
-            # login.twitterLogin(driver)
+            login.loginType(driver, scope.handleTest(sys.argv))
             while True:
                 command = input("test> ")
                 if command == "exit":
@@ -122,35 +121,40 @@ if __name__ == "__main__":
                     break
                 elif command == "help":
                     print("Commands:" + \
+                        "\n\telement --action --count" + \
                         "\n\thelp - display this message" + \
                         "\n\texit - exit the test shell")
                 elif " --" in command:
-                    element, action, count = command.split(" --")
-                    if action == "click":
-                        try:
+                    command_list = command.split(" --")
+                    element = command_list[0]
+                    action = command_list[1]
+                    if len(command_list) > 2:
+                        count = command_list[2]
+                    else:
+                        count = 0
+                    try:
+                        if action == "len":
+                            print(len(driver.find_elements(By.CSS_SELECTOR, element)))
+                        elif action == "click":
                             driver.find_elements(By.CSS_SELECTOR, element)[int(count)].click()
-                        except:
-                            print("Error Clicking Element")
-                    elif action == "text":
-                        try:
+                        elif action == "text":
                             print(driver.find_elements(By.CSS_SELECTOR, element)[int(count)].text)
-                        except:
-                            print("Error Extracting Text")
-                    elif action == "src":
-                        try:
+                        elif action == "enter":
+                            driver.find_elements(By.CSS_SELECTOR, element)[int(count)].send_keys(Keys.RETURN)
+                        elif action == "esc":
+                            driver.find_elements(By.CSS_SELECTOR, element)[int(count)].send_keys(Keys.ESCAPE)
+                        elif action == "src":
                             print(driver.find_elements(By.CSS_SELECTOR, element)[int(count)].get_attribute("src"))
-                        except:
-                            print("Error Grabbing Element SRC")
-                else:
-                    els = driver.find_elements(By.CSS_SELECTOR, command)
-                    print(len(els))
-                    for el in els:
-                        print(el.get_attribute("class"))
-                        try:
-                            scope.captureElement(driver, f"{dir.root}\\in\\preview\\test - {command} {els.index(el)}", element=el)
-                        except:
-                            print("Error Capturing Element")
-                            break
+                        elif action == "href":
+                            print(driver.find_elements(By.CSS_SELECTOR, element)[int(count)].get_attribute("href"))
+                        elif action == "class":
+                            print(driver.find_elements(By.CSS_SELECTOR, element)[int(count)].get_attribute("class"))
+                        elif action == "html":
+                            print(driver.find_elements(By.CSS_SELECTOR, element)[int(count)].get_attribute("innerHTML"))
+                        elif action == "cap":
+                            scope.captureElement(driver, f"{dir.root}\\in\\preview\\test - {element} {count}", element=driver.find_elements(By.CSS_SELECTOR, element)[int(count)])
+                    except:
+                        print("Error Processing Command")
         else:
             print("Invalid Platform. Please try again or type 'exit' to exit the Sniper Shell.")
     

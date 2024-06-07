@@ -3,9 +3,25 @@ from selenium.webdriver import ActionChains
 from PIL import Image
 from io import BytesIO
 import urllib.request
+import requests
 import time, re, os
 
 from sniper import dir
+
+### ARGUMENT HANDLING ###
+def handlePlatform(args):
+    if len(args) == 1:
+        print("Enter a Platform:\n-> tumblr\n-> patreon\n-> twitter\n-> other")
+        return input("> ")
+    elif len(args) > 2:
+        return args[1]
+
+def handleTest(args):
+    if len(args) == 2:
+        print("Enter a Platform:\n-> tumblr\n-> patreon\n-> twitter")
+        return input("> ")
+    elif len(args) == 3:
+        return args[2]
 
 ### STRING PROCESSING ###
 # Cleans text for entry into csv
@@ -25,7 +41,7 @@ def userSelectMssg(options, keyword):
     user_mssg = f"Select {keyword}:\n"
     for count, option in options:
         user_mssg += f"[{count}] {option}\n"
-    return user_mssg
+    return user_mssg + "> "
 
 ### FILE FUNCTIONS ###
 # Passed file title and data, writes data to file at location
@@ -92,6 +108,32 @@ def scrollToBottom(driver):
         if new_height == last_height:
             break
         last_height = new_height
+
+def whileScrolling(driver, action, sleep=2, expand=None):
+    post_list = []
+    returnValues = []
+    last_height = getScroll(driver)
+    while True:
+        new_height = scrollScreen(driver)
+        time.sleep(sleep)
+        if expand != None:
+            if len(expand(driver)) > 0:
+                expand(driver)[0].click()
+                time.sleep(10)
+                new_height = scrollScreen(driver)
+        returnValues = newPosts(action(driver), returnValues, post_list)
+        if new_height == last_height:
+            break
+        last_height = new_height
+    return returnValues
+
+def newPosts(currentPosts, data_tuples, post_list):
+    for post in currentPosts:
+        if post not in post_list:
+            post_list.append(post)
+            data_tuples.append((post.get_attribute("href"), post.text))
+    return data_tuples
+
 # Get Window Height
 def getHeight(driver, cookies=0, banner=0):
     return driver.execute_script("return window.innerHeight") - cookies - banner
@@ -119,23 +161,29 @@ def getBoundaries(driver, element=None, bottom=None, top=None):
     if top != None:
         coords["top"] = top
     return coords
-# Get Image Source Link
-def getSrc(element, MaxBool=False):
-    srcset = [img.split(" ") for img in element.get_attribute("srcset").split(", ")]
-    if MaxBool:
-        src = srcset[-1][0]
-    else:
-        for tup in srcset:
-            if tup[1] == "540w"  or tup[1] == "500w":
-                src = tup[0]
-    return src
 
 ### DOWNLOAD FUNCTIONS ###
-def downloadFile(src, filename):
+def downloadUrllib(src, filename):
     try:
         urllib.request.urlretrieve(src, filename)
     except:
         print(f"Failed to Download {src}")
+
+def downloadRequests(src, filename):
+    try:
+        r = requests.get(src)
+        with open(f"{filename}.png", "wb") as f:
+            f.write(r.content)
+    except:
+        print(f"Failed to Download {src}")
+
+def downloadImages(images, filename, getSRC, dlType, driver=None):
+    num = 1
+    for image in images:
+        src = getSRC(image, driver)
+        if src != "https://":
+            dlType(src, f"{filename} - {num}")
+            num += 1
 
 ### CAPTURE FUNCTIONS ###
 # Combine Screenshots
