@@ -21,33 +21,33 @@ def closeMembershipPopup(driver):
     except:
         pass
 
-def findButton(driver, keyword):
-    buttons = driver.find_elements(By.CSS_SELECTOR, "div.dAYgYF button.hjwRvq")
-    for button in buttons:
-        if keyword == button.text:
-            return button
-    return None
-
-def selectFilter(driver, keyword, subelement):
-    findButton(driver, keyword).click()
+def handleFilter(driver, keyword, element, subelement, default=None):
+    scope.grabElementByText(keyword, driver.find_elements(By.CSS_SELECTOR, element)).click()
     buttons = driver.find_elements(By.CSS_SELECTOR, subelement)
+# Select the filter based on the user input or by the default value
+    userSelect = default
     option_tuples = [(0, "All")] + [(buttons.index(button) + 1, button.text) for button in buttons]
-    userSelect = input(scope.userSelectMssg(option_tuples, keyword))
+    if default == None:
+        userSelect = input(scope.userSelectMssg(option_tuples, keyword))
+# Select the filter based on the user input
     if userSelect != "0":
         buttons[int(userSelect) - 1].click()
         time.sleep(1)
-        value = f"{option_tuples[int(userSelect)][1].split(' (')[0]}"
+        return f"{option_tuples[int(userSelect)][1].split(' (')[0]}"
     else:
-        driver.find_element(By.CSS_SELECTOR, "div.dAYgYF button.hjwRvq").send_keys(Keys.ESCAPE)
+        driver.find_element(By.CSS_SELECTOR, element).send_keys(Keys.ESCAPE)
         time.sleep(1)
-        value = None
-    return value
+        return None
 
-def toggleOrder(driver):
+def toggleOrder(driver, default=None):
     driver.find_element(By.CSS_SELECTOR, "div.dAYgYF button.kjazmo").click()
     time.sleep(1)
     buttons = driver.find_elements(By.CSS_SELECTOR, "a.iQxAKa")
-    userSelect = input("Select Order:\n[0] Newest to oldest\n[1] Oldest to newest\n")
+# Select the filter based on the user input or by the default value
+    userSelect = default
+    if default == None:
+        userSelect = input("Select Order:\n[0] Newest to oldest\n[1] Oldest to newest\n")
+# Select the filter based on the user input
     if userSelect == "1":
         buttons[1].click()
         time.sleep(1)
@@ -64,6 +64,15 @@ def extractUser(target, driver):
         return target
 def extractCode(target):
     return target.split("/")[-1].split("-")[-1]
+
+def extractDefault(command):
+    all = command.split(" ")
+    if len(all) == 1:
+        return ["0", "0", "0", "0"]
+    if len(all) == 2 and all[1] == "ask":
+        return None
+    else:
+        return [x for x in all[1:] if x != ""]
 
 ### Grab
 def grabPost(driver):

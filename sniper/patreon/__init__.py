@@ -41,8 +41,9 @@ def main(driver, command):
                 data_tuples.append((target, text))
             scope.write(f"{dir.root}\\patreon {command}.txt", data_tuples)
     # Archive Commands
-        elif command == "feed":
+        elif "feed" in command:
             scope.driverGet(driver, f"https://www.patreon.com/{user}/posts", sleep=5)
             driver.set_window_size(1024, 1940)
-            data_tuples, filter_str = funcs.commandFeed(driver)
-            scope.write(f"{dir.root}\\{command} {user} {filter_str}.txt", data_tuples)
+            defaults = utils.extractDefault(command)
+            data_tuples, filter_str = funcs.commandFeed(driver, defaults)
+            scope.write(f"{dir.root}\\feed {user} {filter_str}.txt", data_tuples)

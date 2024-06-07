@@ -13,7 +13,7 @@ def handlePlatform(args):
     if len(args) == 1:
         print("Enter a Platform:\n-> tumblr\n-> patreon\n-> twitter\n-> other")
         return input("> ")
-    elif len(args) > 2:
+    elif len(args) > 1:
         return args[1]
 
 def handleTest(args):
@@ -79,6 +79,12 @@ def driverGet(driver, target, sleep=2):
             print(f"Error: Unable to get {target}")
     time.sleep(sleep)
 
+def grabElementByText(text, elements):
+    for el in elements:
+        if text == el.text:
+            return el
+    return None
+
 ### LOG ###
 def printProgress(list, index):
     print(f"{list.index(index)+1}/{len(list)}")
@@ -116,13 +122,13 @@ def whileScrolling(driver, action, sleep=2, expand=None):
     while True:
         new_height = scrollScreen(driver)
         time.sleep(sleep)
-        if expand != None:
-            if len(expand(driver)) > 0:
-                expand(driver)[0].click()
-                time.sleep(10)
-                new_height = scrollScreen(driver)
+        expandBool = False
+        if expand != None and len(expand(driver)) > 0:
+            expand(driver)[0].click()
+            expandBool = True
+            time.sleep(10)
         returnValues = newPosts(action(driver), returnValues, post_list)
-        if new_height == last_height:
+        if new_height == last_height and expandBool == False:
             break
         last_height = new_height
     return returnValues
