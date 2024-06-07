@@ -49,8 +49,8 @@ def downloadContents(contents, filename, caption=None):
                 new_filename = f"{filename} - {num} {caption}.{tuple[1]}"
             else:
                 new_filename = f"{filename} - {num}.{tuple[1]}"
-            src = scope.getSrc(el, MaxBool=True)
-            scope.downloadFile(src, new_filename)
+            src = utils.getSrc(el, MaxBool=True)
+            scope.downloadUrllib(src, new_filename)
             num += 1
 
 

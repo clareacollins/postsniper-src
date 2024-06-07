@@ -177,6 +177,16 @@ def getFeedCode(post):
     except:
         return "None"
 
+def getSrc(element, MaxBool=False):
+    srcset = [img.split(" ") for img in element.get_attribute("srcset").split(", ")]
+    if MaxBool:
+        src = srcset[-1][0]
+    else:
+        for tup in srcset:
+            if tup[1] == "540w"  or tup[1] == "500w":
+                src = tup[0]
+    return src
+
 ### Return Int ###
 def getPostEnd(post):
     return grabNotes(post).location["y"]
