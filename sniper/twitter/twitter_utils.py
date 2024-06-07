@@ -1,4 +1,5 @@
 from selenium.webdriver.common.by import By
+import re
 
 def extractUser(target):
     if "/" in target:
@@ -37,3 +38,6 @@ def getPostEnd(post):
 # Archive
 def getMedia(driver):
     return driver.find_elements(By.CSS_SELECTOR, "li a")
+
+def getSrc(image, driver=None):
+    return re.sub("\?format=jpg&name=[\d|\w]*", "?format=jpg&name=large", image.get_attribute("src"))

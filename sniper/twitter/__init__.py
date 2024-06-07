@@ -21,19 +21,17 @@ def main(driver, command):
             driver.set_window_size(1024, 1940)
             if command == "ingest":
                 scope.captureElement(driver, f"{dir.post}\\{user} - x{code}", element=post, bottom=utils.getPostEnd(post))
-                images = utils.getPostImages(post)
-                funcs.downloadImages(images, f"{dir.img}\\{user} - x{code}")
+                scope.downloadImages(utils.getPostImages(post), f"{dir.img}\\{user} - x{code}", utils.getSrc, scope.downloadRequests)
             elif command == "cap":
                 scope.captureElement(driver, f"{dir.post}\\{user} - x{code}", element=post, bottom=utils.getPostEnd(post))
             elif command == "prev":
                 scope.captureElement(driver, f"{dir.post}\\{user} - x{code}", element=post, bottom=min(utils.getPostEnd(post), 1939))
             elif command == "pic":
-                images = utils.getPostImages(post)
-                funcs.downloadImages(images, f"{dir.img}\\{user} - x{code}")
+                scope.downloadImages(utils.getPostImages(post), f"{dir.img}\\{user} - x{code}", utils.getSrc, scope.downloadRequests)
     # Archive Commands
         elif command in ['media']:
             scope.driverGet(driver, f"https://twitter.com/{user}/media", sleep=5)
-            data_tuples = funcs.commandMedia(driver)
+            data_tuples = scope.whileScrolling(driver, utils.getMedia, sleep=10)
             scope.write(f"{dir.root}\\{command} {user}.txt", data_tuples)
     # Data Commands
         elif command in ["data", "text"]:
